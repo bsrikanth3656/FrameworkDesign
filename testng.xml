@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+
+<suite name="FrameworkExecution" thread-count="1" parallel="none"
+	preserve-order="true" group-by-instances="true">
+	<listeners>
+		<listener class-name="com.common.function.library.TestListener" />
+	</listeners>
+	<test name="FrameworkExecution">
+		<classes>
+			<class name="com.driver.factory.Apptest" />
+		</classes>
+	</test>
+</suite>
