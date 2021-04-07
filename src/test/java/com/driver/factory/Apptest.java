@@ -61,5 +61,30 @@ public class Apptest {
 		}
 
 	}
+	
+	@Test(priority = 3)
+	@Story("Base support for bdd annotations")
+	@Description("Some detailed test description")
+	@Step("Type {user.name} / {user.password}.")
+	@Severity(SeverityLevel.CRITICAL)
+	@Epic("Allure examples 3")
+	@Feature("TestNG support 3")
+	public void kickStart3() throws Throwable {
+
+		Driverscript ds = new Driverscript();
+
+		try
+
+		{
+			ds.startTest();
+			Assert.fail("Failed intentionally");
+		} catch (Exception e)
+
+		{
+			e.printStackTrace();
+
+		}
+
+	}
 
 }
