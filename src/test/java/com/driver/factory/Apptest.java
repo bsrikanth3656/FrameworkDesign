@@ -77,7 +77,6 @@ public class Apptest {
 
 		{
 			ds.startTest();
-			Assert.fail("Failed intentionally");
 		} catch (Exception e)
 
 		{
