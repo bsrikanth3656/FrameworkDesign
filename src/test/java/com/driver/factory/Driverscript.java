@@ -60,11 +60,11 @@ public class Driverscript {
 							logger.log(Status.INFO, DESCRIPTION);
 						}
 						if (OBJECT_TYPE.equalsIgnoreCase("startmobilebrowser")) {
-							mobiledriver = Functionlibrary.setUpAppium(mobiledriver);
+//							mobiledriver = Functionlibrary.setUpAppium(mobiledriver);
 							logger.log(Status.INFO, DESCRIPTION);
 						}
 						if (OBJECT_TYPE.equalsIgnoreCase("deleteapp")) {
-							Functionlibrary.deleteApp();
+//							Functionlibrary.deleteApp();
 							logger.log(Status.INFO, DESCRIPTION);
 						}
 						if (OBJECT_TYPE.equalsIgnoreCase("openapplication")) {
