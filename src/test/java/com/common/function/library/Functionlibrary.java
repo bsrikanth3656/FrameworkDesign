@@ -21,13 +21,9 @@ import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.asserts.SoftAssert;
-
 import com.driver.factory.Driver;
-import com.ssts.pcloudy.Connector;
-import com.ssts.pcloudy.exception.ConnectError;
 import com.utilities.Excelfileutil;
 import com.utilities.Propertiesfileutil;
-
 import org.openqa.selenium.JavascriptExecutor;
 import io.appium.java_client.MobileElement;
 import io.appium.java_client.android.AndroidDriver;
@@ -115,82 +111,82 @@ public class Functionlibrary {
 		return driver;
 	}
 
-	public static AndroidDriver<MobileElement> setUpAppium(AndroidDriver<MobileElement> mdriver) throws Throwable {
-
-		if (Propertiesfileutil.getvalueforkey("Execution").equalsIgnoreCase("cloud")) {
-
-			Connector con = new Connector("https://skillsoft.pcloudy.com");
-			try {
-				authToken = con.authenticateUser(Propertiesfileutil.getvalueforkey("Username"),
-						Propertiesfileutil.getvalueforkey("Apikey"));
-			} catch (IOException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			} catch (ConnectError e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-			// System.out.println("Going to delete apk");
-			// try {
-			// con.deleteFileFromCloud(authToken, "Artisan.apk", "data");
-			// } catch (IOException e1) {
-			// // TODO Auto-generated catch block
-			// e1.printStackTrace();
-			// }
-			// System.out.println("Able to delete apk");
-
-			// Adding capabilities
-			capa.setCapability("pCloudy_Username", Propertiesfileutil.getvalueforkey("Username"));
-			capa.setCapability("pCloudy_ApiKey", Propertiesfileutil.getvalueforkey("Apikey"));
-			capa.setCapability("pCloudy_DurationInMinutes", 10);
-			capa.setCapability("newCommandTimeout", 600);
-			capa.setCapability("launchTimeout", 90000);
-			capa.setCapability("pCloudy_DeviceFullName", "GOOGLE_Pixel3XL_Android_11.0.0_7fb3a");
-			capa.setCapability("platformVersion", "11.0.0");
-			capa.setCapability("platformName", "Android");
-			capa.setCapability("automationName", "uiautomator2");
-			capa.setCapability("pCloudy_ApplicationName", "Percipio_Android_release847.apk");
-			capa.setCapability("appPackage", "asdf");
-			capa.setCapability("appActivity", "asfd");
-			capa.setCapability("pCloudy_WildNet", "false");
-			capa.setCapability("pCloudy_EnableVideo", "false");
-			capa.setCapability("pCloudy_EnablePerformanceData", "false");
-			capa.setCapability("pCloudy_EnableDeviceLogs", "false");
-
-			try {
-				System.out.println("Going to Initiate Driver");
-				mdriver = new AndroidDriver<MobileElement>(new URL("https://skillsoft.pcloudy.com/appiumcloud/wd/hub"),
-						capa);
-				Driver.setAndroidDriver(mdriver);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-
-		}
-		return mdriver;
-	}
-
-	// method for open application
-	public static void deleteApp() throws Throwable {
-		System.out.println("Going to delete apk");
-		try {
-			Connector con = new Connector("https://skillsoft.pcloudy.com");
-			try {
-				authToken = con.authenticateUser(Propertiesfileutil.getvalueforkey("Username"),
-						Propertiesfileutil.getvalueforkey("Apikey"));
-			} catch (IOException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			} catch (ConnectError e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-			con.deleteFileFromCloud(authToken, "Artisan.apk", "data");
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-	}
+//	public static AndroidDriver<MobileElement> setUpAppium(AndroidDriver<MobileElement> mdriver) throws Throwable {
+//
+//		if (Propertiesfileutil.getvalueforkey("Execution").equalsIgnoreCase("cloud")) {
+//
+//			Connector con = new Connector("https://skillsoft.pcloudy.com");
+//			try {
+//				authToken = con.authenticateUser(Propertiesfileutil.getvalueforkey("Username"),
+//						Propertiesfileutil.getvalueforkey("Apikey"));
+//			} catch (IOException e1) {
+//				// TODO Auto-generated catch block
+//				e1.printStackTrace();
+//			} catch (ConnectError e1) {
+//				// TODO Auto-generated catch block
+//				e1.printStackTrace();
+//			}
+//			// System.out.println("Going to delete apk");
+//			// try {
+//			// con.deleteFileFromCloud(authToken, "Artisan.apk", "data");
+//			// } catch (IOException e1) {
+//			// // TODO Auto-generated catch block
+//			// e1.printStackTrace();
+//			// }
+//			// System.out.println("Able to delete apk");
+//
+//			// Adding capabilities
+//			capa.setCapability("pCloudy_Username", Propertiesfileutil.getvalueforkey("Username"));
+//			capa.setCapability("pCloudy_ApiKey", Propertiesfileutil.getvalueforkey("Apikey"));
+//			capa.setCapability("pCloudy_DurationInMinutes", 10);
+//			capa.setCapability("newCommandTimeout", 600);
+//			capa.setCapability("launchTimeout", 90000);
+//			capa.setCapability("pCloudy_DeviceFullName", "GOOGLE_Pixel3XL_Android_11.0.0_7fb3a");
+//			capa.setCapability("platformVersion", "11.0.0");
+//			capa.setCapability("platformName", "Android");
+//			capa.setCapability("automationName", "uiautomator2");
+//			capa.setCapability("pCloudy_ApplicationName", "Percipio_Android_release847.apk");
+//			capa.setCapability("appPackage", "asdf");
+//			capa.setCapability("appActivity", "asfd");
+//			capa.setCapability("pCloudy_WildNet", "false");
+//			capa.setCapability("pCloudy_EnableVideo", "false");
+//			capa.setCapability("pCloudy_EnablePerformanceData", "false");
+//			capa.setCapability("pCloudy_EnableDeviceLogs", "false");
+//
+//			try {
+//				System.out.println("Going to Initiate Driver");
+//				mdriver = new AndroidDriver<MobileElement>(new URL("https://skillsoft.pcloudy.com/appiumcloud/wd/hub"),
+//						capa);
+//				Driver.setAndroidDriver(mdriver);
+//			} catch (Exception e) {
+//				e.printStackTrace();
+//			}
+//
+//		}
+//		return mdriver;
+//	}
+//
+//	// method for open application
+//	public static void deleteApp() throws Throwable {
+//		System.out.println("Going to delete apk");
+//		try {
+//			Connector con = new Connector("https://skillsoft.pcloudy.com");
+//			try {
+//				authToken = con.authenticateUser(Propertiesfileutil.getvalueforkey("Username"),
+//						Propertiesfileutil.getvalueforkey("Apikey"));
+//			} catch (IOException e1) {
+//				// TODO Auto-generated catch block
+//				e1.printStackTrace();
+//			} catch (ConnectError e1) {
+//				// TODO Auto-generated catch block
+//				e1.printStackTrace();
+//			}
+//			con.deleteFileFromCloud(authToken, "Artisan.apk", "data");
+//		} catch (IOException e1) {
+//			// TODO Auto-generated catch block
+//			e1.printStackTrace();
+//		}
+//	}
 
 	// method for open application
 	public static void openapplication(WebDriver driver) throws Throwable {

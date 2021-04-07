@@ -32,11 +32,11 @@
 		</dependency>
 
 
-		<dependency>
+	<!-- <dependency>
 			<groupId>pCloudy-java-connector</groupId>
 			<artifactId>pCloudy-java-connector</artifactId>
 			<version>11.0.4</version>
-		</dependency>
+		</dependency> -->
 		<dependency>
 			<groupId>io.appium</groupId>
 			<artifactId>java-client</artifactId>
