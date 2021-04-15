@@ -3,9 +3,9 @@
 
 <suite name="FrameworkExecution" thread-count="1" parallel="none"
 	preserve-order="true" group-by-instances="true">
-	<listeners>
+	<!-- <listeners>
 		<listener class-name="com.common.function.library.TestListener" />
-	</listeners>
+	</listeners> -->
 	<test name="FrameworkExecution">
 		<classes>
 			<class name="com.driver.factory.Apptest" />
