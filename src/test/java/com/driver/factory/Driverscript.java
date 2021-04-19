@@ -16,13 +16,15 @@ import com.aventstack.extentreports.ExtentTest;
 import com.aventstack.extentreports.MediaEntityBuilder;
 import com.aventstack.extentreports.Status;
 import com.aventstack.extentreports.reporter.ExtentHtmlReporter;
-import com.common.function.library.Functionlibrary;
+import com.common.function.library.Web_Functionlibrary;
+import com.common.function.library.API_Functionlibrary;
 import com.common.function.library.TestListener;
 import com.utilities.Excelfileutil;
 import com.utilities.Propertiesfileutil;
 
 import io.appium.java_client.MobileElement;
 import io.appium.java_client.android.AndroidDriver;
+import io.qameta.allure.Attachment;
 
 @Listeners(TestListener.class)
 public class Driverscript {
@@ -36,7 +38,9 @@ public class Driverscript {
 	public static Excelfileutil excel;
 	public static Propertiesfileutil prop;
 	public static SoftAssert softAssertion = new SoftAssert();
-	public String failMsg;
+	public static StringBuilder failMsg = new StringBuilder(" ");
+	public static boolean testFail = false;
+	public static String TCmodule;
 
 	public void startTest() throws Throwable {
 		// creating object for constructor
@@ -46,10 +50,10 @@ public class Driverscript {
 		// module sheet
 		for (int i = 1; i <= Excelfileutil.rowcount("mastertestcases"); i++) {
 			if (excel.getdata("mastertestcases", i, 2).equalsIgnoreCase("y")) {
-				String TCmodule = excel.getdata("mastertestcases", i, 1);
+				TCmodule = excel.getdata("mastertestcases", i, 1);
 				// generate extent report
 				htmlreporter = new ExtentHtmlReporter(
-						"./Reports/" + TCmodule + Functionlibrary.generateDate() + ".html");
+						"./Reports/" + TCmodule + Web_Functionlibrary.generateDate() + ".html");
 				htmlreporter.config().setReportName("Execution results for test" + TCmodule);
 				report = new ExtentReports();
 				report.attachReporter(htmlreporter);
@@ -63,6 +67,7 @@ public class Driverscript {
 					String OBJECTNAME = excel.getdata(TCmodule, j, 2);
 					String LOCATOR = excel.getdata(TCmodule, j, 3);
 					String TEST_DATA = excel.getdata(TCmodule, j, 4);
+					String API_PAYLOAD = excel.getdata(TCmodule, j, 8);
 
 					ArrayList<String> list = new ArrayList<String>();
 					list.add(excel.getdata(TCmodule, j, 0));
@@ -73,16 +78,15 @@ public class Driverscript {
 					list.add(excel.getdata(TCmodule, j, 5));
 					list.add(excel.getdata(TCmodule, j, 6));
 					list.add(excel.getdata(TCmodule, j, 7));
-					// key.test(rp.getName(), list);
+					list.add(excel.getdata(TCmodule, j, 8));
 
-					// int test_data=excel.getdata(TCmodule,j,5);
 					try {
 						if (KEYWORD.equalsIgnoreCase("startbrowser")) {
-							driver = Functionlibrary.startbrowser(driver, Propertiesfileutil.getEnvValues(), list);
+							driver = Web_Functionlibrary.startbrowser(driver, Propertiesfileutil.getEnvValues(), list);
 							// logger.log(Status.INFO, DESCRIPTION);
 						}
 						if (KEYWORD.equalsIgnoreCase("openapplication")) {
-							Functionlibrary.openapplication(driver, Propertiesfileutil.getEnvValues(), list);
+							Web_Functionlibrary.openapplication(driver, Propertiesfileutil.getEnvValues(), list);
 							// logger.log(Status.INFO, DESCRIPTION);
 
 							logger.log(Status.INFO, DESCRIPTION, MediaEntityBuilder
@@ -90,20 +94,14 @@ public class Driverscript {
 							captureImage(driver);
 
 							File src = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
-							String destination = ("./Screenshot/" + DESCRIPTION + "_" + Functionlibrary.generateDate()
-									+ ".png");
+							String destination = ("./Screenshot/" + DESCRIPTION + "_"
+									+ Web_Functionlibrary.generateDate() + ".png");
 							File dest = new File(destination);
 							FileUtils.copyFile(src, dest);
 
-							// add screenshot to extent report
-							// logger.log(Status.INFO, "FAQs button clicked",
-							// MediaEntityBuilder.createScreenCaptureFromPath("." + screenshot()).build());
-							// // String image = logger.addScreenCapture(destination);
-							// logger.log(Status.INFO, image);
-
 						}
 						if (KEYWORD.equalsIgnoreCase("clickaction")) {
-							Functionlibrary.clickaction(driver, Propertiesfileutil.getObjectLocators(), list);
+							Web_Functionlibrary.clickaction(driver, Propertiesfileutil.getObjectLocators(), list);
 							// logger.log(Status.INFO, DESCRIPTION);
 
 							logger.log(Status.INFO, DESCRIPTION, MediaEntityBuilder
@@ -111,93 +109,140 @@ public class Driverscript {
 							captureImage(driver);
 						}
 						if (KEYWORD.equalsIgnoreCase("typeaction")) {
-							Functionlibrary.typeaction(driver, Propertiesfileutil.getObjectLocators(), list);
+							Web_Functionlibrary.typeaction(driver, Propertiesfileutil.getObjectLocators(), list);
 							logger.log(Status.INFO, DESCRIPTION);
 
 						}
 						if (KEYWORD.equalsIgnoreCase("waiting")) {
-							Functionlibrary.waiting(driver, Propertiesfileutil.getObjectLocators(), list);
+							Web_Functionlibrary.waiting(driver, Propertiesfileutil.getObjectLocators(), list);
 							logger.log(Status.INFO, DESCRIPTION);
 						}
 						if (KEYWORD.equalsIgnoreCase("closeapplication")) {
-							Functionlibrary.closeapplication(driver);
+							Web_Functionlibrary.closeapplication(driver);
 							logger.log(Status.INFO, DESCRIPTION);
 						}
 						if (KEYWORD.equalsIgnoreCase("titlevalidation")) {
-							Functionlibrary.titlevalidation(driver, TEST_DATA);
+							Web_Functionlibrary.titlevalidation(driver, TEST_DATA);
 							logger.log(Status.INFO, DESCRIPTION);
 						}
 						if (KEYWORD.equalsIgnoreCase("textvalidation")) {
-							Functionlibrary.textvalidation(driver, Propertiesfileutil.getObjectLocators(), TEST_DATA,
-									list);
+							Web_Functionlibrary.textvalidation(driver, Propertiesfileutil.getObjectLocators(),
+									TEST_DATA, list);
 							logger.log(Status.INFO, DESCRIPTION);
 						}
 						if (KEYWORD.equalsIgnoreCase("alertPopUp")) {
-							Functionlibrary.alertPopUp(driver);
+							Web_Functionlibrary.alertPopUp(driver);
 							logger.log(Status.INFO, DESCRIPTION);
 						}
 						if (KEYWORD.equalsIgnoreCase("switchWindow")) {
-							Functionlibrary.switchWindow(driver);
+							Web_Functionlibrary.switchWindow(driver);
 							logger.log(Status.INFO, DESCRIPTION);
 						}
 						if (KEYWORD.equalsIgnoreCase("switchFrame")) {
-							Functionlibrary.switchFrame(driver, Propertiesfileutil.getObjectLocators(), list);
+							Web_Functionlibrary.switchFrame(driver, Propertiesfileutil.getObjectLocators(), list);
 							logger.log(Status.INFO, DESCRIPTION);
 						}
 						if (KEYWORD.equalsIgnoreCase("mouseHover")) {
-							Functionlibrary.mouseHover(driver, Propertiesfileutil.getObjectLocators(), list);
+							Web_Functionlibrary.mouseHover(driver, Propertiesfileutil.getObjectLocators(), list);
 							logger.log(Status.INFO, DESCRIPTION);
 						}
 						if (KEYWORD.equalsIgnoreCase("rightClick")) {
-							Functionlibrary.rightClick(driver, Propertiesfileutil.getObjectLocators(), list);
+							Web_Functionlibrary.rightClick(driver, Propertiesfileutil.getObjectLocators(), list);
 							logger.log(Status.INFO, DESCRIPTION);
 						}
 						if (KEYWORD.equalsIgnoreCase("doubleClick")) {
-							Functionlibrary.doubleClick(driver, Propertiesfileutil.getObjectLocators(), list);
+							Web_Functionlibrary.doubleClick(driver, Propertiesfileutil.getObjectLocators(), list);
 							logger.log(Status.INFO, DESCRIPTION);
 						}
 						if (KEYWORD.equalsIgnoreCase("dragDrop")) {
-							Functionlibrary.dragDrop(driver, Propertiesfileutil.getObjectLocators(), list);
+							Web_Functionlibrary.dragDrop(driver, Propertiesfileutil.getObjectLocators(), list);
 							logger.log(Status.INFO, DESCRIPTION);
 						}
 						if (KEYWORD.equalsIgnoreCase("highlightElement")) {
-							Functionlibrary.highlightElement(driver, Propertiesfileutil.getObjectLocators(), list);
+							Web_Functionlibrary.highlightElement(driver, Propertiesfileutil.getObjectLocators(), list);
 							logger.log(Status.INFO, DESCRIPTION);
 						}
 						if (KEYWORD.equalsIgnoreCase("dehighlightElement")) {
-							Functionlibrary.dehighlightElement(driver, Propertiesfileutil.getObjectLocators(), list);
+							Web_Functionlibrary.dehighlightElement(driver, Propertiesfileutil.getObjectLocators(),
+									list);
 							logger.log(Status.INFO, DESCRIPTION);
 						}
 						if (KEYWORD.equalsIgnoreCase("verifyElementPresent")) {
-							Functionlibrary.verifyElementPresent(driver, Propertiesfileutil.getObjectLocators(), list);
+							Web_Functionlibrary.verifyElementPresent(driver, Propertiesfileutil.getObjectLocators(),
+									list);
 							logger.log(Status.INFO, DESCRIPTION);
 						}
 						if (KEYWORD.equalsIgnoreCase("verifyElementEnabled")) {
-							Functionlibrary.verifyElementEnabled(driver, Propertiesfileutil.getObjectLocators(), list);
+							Web_Functionlibrary.verifyElementEnabled(driver, Propertiesfileutil.getObjectLocators(),
+									list);
 							logger.log(Status.INFO, DESCRIPTION);
 						}
 						if (KEYWORD.equalsIgnoreCase("LinkPresent")) {
-							Functionlibrary.LinkPresent(driver, list);
+							Web_Functionlibrary.LinkPresent(driver, list);
 							logger.log(Status.INFO, DESCRIPTION);
 						}
 						if (KEYWORD.equalsIgnoreCase("dropdownaction")) {
-							Functionlibrary.dropdownaction(driver, LOCATOR, OBJECTNAME, TEST_DATA);
+							Web_Functionlibrary.dropdownaction(driver, LOCATOR, OBJECTNAME, TEST_DATA);
 							logger.log(Status.INFO, DESCRIPTION);
 						}
 
 						if (KEYWORD.equalsIgnoreCase("Scrolldownaction")) {
-							Functionlibrary.ScrollDownAction(driver, Propertiesfileutil.getObjectLocators(), list);
+							Web_Functionlibrary.ScrollDownAction(driver, Propertiesfileutil.getObjectLocators(), list);
+							logger.log(Status.INFO, DESCRIPTION);
+						}
+						if (KEYWORD.equalsIgnoreCase("PostMethod")) {
+							API_Functionlibrary.apiPost(Propertiesfileutil.getEnvValue("API_URI"), API_PAYLOAD,
+									Propertiesfileutil.getEnvValue("API_Post_BasePath"));
+							logger.log(Status.INFO, DESCRIPTION);
+						}
+						if (KEYWORD.equalsIgnoreCase("PutMethod")) {
+							API_Functionlibrary.apiPut(Propertiesfileutil.getEnvValue("API_URI"), API_PAYLOAD,
+									Propertiesfileutil.getEnvValue("API_Put_BasePath"));
+							logger.log(Status.INFO, DESCRIPTION);
+						}
+						if (KEYWORD.equalsIgnoreCase("DeleteMethod")) {
+							API_Functionlibrary.apiDelete(Propertiesfileutil.getEnvValue("API_URI"),
+									Propertiesfileutil.getEnvValue("API_Delete_BasePath"));
+							logger.log(Status.INFO, DESCRIPTION);
+						}
+						if (KEYWORD.equalsIgnoreCase("GetMethod")) {
+							API_Functionlibrary.apiGet(Propertiesfileutil.getEnvValue("API_URI"),
+									Propertiesfileutil.getEnvValue("API_Get_BasePath"));
+							logger.log(Status.INFO, DESCRIPTION);
+						}
+						if (KEYWORD.equalsIgnoreCase("GetStatusCode")) {
+							API_Functionlibrary.getStatusCode();
+							logger.log(Status.INFO, DESCRIPTION);
+						}
+						if (KEYWORD.equalsIgnoreCase("GetResponse")) {
+							API_Functionlibrary.getStatusCode();
+							logger.log(Status.INFO, DESCRIPTION);
+						}
+						if (KEYWORD.equalsIgnoreCase("GetStatusLine")) {
+							API_Functionlibrary.getStatusLine();
+							logger.log(Status.INFO, DESCRIPTION);
+						}
+						if (KEYWORD.equalsIgnoreCase("GetErrorCodeInResponse")) {
+							API_Functionlibrary.getErrorCodeInResponse();
+							logger.log(Status.INFO, DESCRIPTION);
+						}
+						if (KEYWORD.equalsIgnoreCase("GetErrordescriptionInResponse")) {
+							API_Functionlibrary.getErrordescriptionInResponse();
+							logger.log(Status.INFO, DESCRIPTION);
+						}
+						if (KEYWORD.equalsIgnoreCase("CheckErrorCodeResponse")) {
+							API_Functionlibrary.checkErrorCodeResponse("200");
 							logger.log(Status.INFO, DESCRIPTION);
 						}
 
-						Excelfileutil.setData(TCmodule, j, 8, "passed");
+						Excelfileutil.setData(TCmodule, j, 9, "passed");
 						Modulestatus = "true";
 						logger.log(Status.INFO, DESCRIPTION);
 
 						report.flush();
 
 					} catch (Exception e) {
-						Excelfileutil.setData(TCmodule, j, 8, "failed");
+						Excelfileutil.setData(TCmodule, j, 9, "failed");
 						Modulestatus = "false";
 						logger.log(Status.FAIL, DESCRIPTION + " failed");
 						// take screenshot
@@ -206,52 +251,36 @@ public class Driverscript {
 						captureImage(driver);
 
 						File src = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
-						String destination = ("./Screenshot/" + DESCRIPTION + "_" + Functionlibrary.generateDate()
+						String destination = ("./Screenshot/" + DESCRIPTION + "_" + Web_Functionlibrary.generateDate()
 								+ ".png");
 						File dest = new File(destination);
 						FileUtils.copyFile(src, dest);
-
-						// // add screenshot to extent report
-						//// logger.log(Status.INFO, "FAQs button clicked",
-						// MediaEntityBuilder.createScreenCaptureFromPath("." + screenshot()).build());
-						// String image = logger.addScreenCapture(destination);
-						// logger.log(Status.FAIL, image);
-
 						report.flush();
 						break;
 
 					}
 
-					catch (AssertionError a) // to handle assert type error
-					{
-						Excelfileutil.setData(TCmodule, j, 8, "failed");
+					catch (AssertionError a) {
+						Excelfileutil.setData(TCmodule, j, 9, "failed");
 						Modulestatus = "false";
-						failMsg = a.getMessage();
+						failMsg.append(a.getMessage() + "in " + TCmodule + "sheet , ");
 						// take screenshot
 						logger.log(Status.FAIL, DESCRIPTION,
 								MediaEntityBuilder.createScreenCaptureFromBase64String(captureImage(driver)).build());
 						captureImage(driver);
 						File src = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
-						String destination = ("./Screenshot/" + DESCRIPTION + "_" + Functionlibrary.generateDate()
+						String destination = ("./Screenshot/" + DESCRIPTION + "_" + Web_Functionlibrary.generateDate()
 								+ ".png");
 						File dest = new File(destination);
 						FileUtils.copyFile(src, dest);
-
-						// // add screenshot to extent report
-						// String image = logger.addScreenCapture(destination);
-						// logger.log(Status.FAIL, image);
 						report.flush();
-
 						break;
-
 					}
 				}
 				if (Modulestatus.equalsIgnoreCase("true")) {
 					Excelfileutil.setData("mastertestcases", i, 3, "Passed");
 				} else {
 					Excelfileutil.setData("mastertestcases", i, 3, "Failed");
-					Assert.fail(failMsg);
-					Functionlibrary.closeapplication(driver);
 				}
 
 			} else {
@@ -259,45 +288,53 @@ public class Driverscript {
 			}
 
 		}
-
+		Web_Functionlibrary.closedriver(Driverscript.driver);
+		System.out.println("Browsers Closed");
+		if (testFail == true) {
+			Assert.fail(failMsg.toString());
+		}
 		report.flush();
 	}
 
 	public void failstatusonexcel(String TCmodule, String Modulestatus, int j) {
 		try {
-			Excelfileutil.setData(TCmodule, j, 8, "failed");
+			Excelfileutil.setData(TCmodule, j, 9, "failed");
 			Modulestatus = "false";
 			report.flush();
 
 		} catch (Throwable e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 
-	public String captureImage(WebDriver driver) {
+	public static String captureImage(WebDriver driver) {
 		try {
 			Thread.sleep(5000);
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
 		TakesScreenshot ts = (TakesScreenshot) driver;
-
 		String base64string = ts.getScreenshotAs(OutputType.BASE64);
 		return base64string;
 	}
 
-	public byte[] captureImageBytes() {
+	public static byte[] captureImageBytes() {
 		try {
 			Thread.sleep(5000);
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
 		return ((TakesScreenshot) driver).getScreenshotAs(OutputType.BYTES);
 	}
 
+	@Attachment(value = "Page Screenshot", type = "image/png")
+	public static byte[] saveFailureScreenShot() {
+		return captureImageBytes();
+	}
+
+	@Attachment(value = "{0}", type = "text/plain")
+	public static String saveTextLog(String message) {
+		return message;
+	}
 }
