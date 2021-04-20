@@ -190,24 +190,71 @@ public class Driverscript {
 							Web_Functionlibrary.ScrollDownAction(driver, Propertiesfileutil.getObjectLocators(), list);
 							logger.log(Status.INFO, DESCRIPTION);
 						}
+						if (KEYWORD.equalsIgnoreCase("GetWebServiceURI")) {
+							API_Functionlibrary.getWebServiceURI();
+							logger.log(Status.INFO, DESCRIPTION);
+						}
+						if (KEYWORD.equalsIgnoreCase("AddQueryParameterInURI")) {
+							API_Functionlibrary.addQueryParameterInWebServiceURI(
+									Propertiesfileutil.getEnvValue("API_Query_param"));
+							logger.log(Status.INFO, DESCRIPTION);
+						}
+
+						if (KEYWORD.equalsIgnoreCase("BasicAuthentication")) {
+							API_Functionlibrary.requestWithBasicAuthentication(
+									Propertiesfileutil.getEnvValue("API_Username"),
+									Propertiesfileutil.getEnvValue("API_Password"));
+							logger.log(Status.INFO, DESCRIPTION);
+						}
+
+						if (KEYWORD.equalsIgnoreCase("PreemptiveAuthentication")) {
+							API_Functionlibrary.requestWithPreemptiveAuthentication(
+									Propertiesfileutil.getEnvValue("API_Username"),
+									Propertiesfileutil.getEnvValue("API_Password"));
+							logger.log(Status.INFO, DESCRIPTION);
+						}
+
+						if (KEYWORD.equalsIgnoreCase("FormAuthentication")) {
+							API_Functionlibrary.formAuthentication(Propertiesfileutil.getEnvValue("API_Username"),
+									Propertiesfileutil.getEnvValue("API_Password"));
+							logger.log(Status.INFO, DESCRIPTION);
+						}
+
+						if (KEYWORD.equalsIgnoreCase("DigestAuthentication")) {
+							API_Functionlibrary.digestAuthentication(Propertiesfileutil.getEnvValue("API_Username"),
+									Propertiesfileutil.getEnvValue("API_Password"));
+							logger.log(Status.INFO, DESCRIPTION);
+						}
+
+						if (KEYWORD.equalsIgnoreCase("BearerTokenAuthentication")) {
+							API_Functionlibrary.bearerTokenAuthentication(
+									Propertiesfileutil.getEnvValue("API_Username"),
+									Propertiesfileutil.getEnvValue("API_Password"),
+									Propertiesfileutil.getEnvValue("API_Bearer_Token"));
+							logger.log(Status.INFO, DESCRIPTION);
+						}
+
+						if (KEYWORD.equalsIgnoreCase("OATH2Authentication")) {
+							API_Functionlibrary.OATH2Authentication(Propertiesfileutil.getEnvValue("API_Username"),
+									Propertiesfileutil.getEnvValue("API_Password"));
+							logger.log(Status.INFO, DESCRIPTION);
+						}
+
 						if (KEYWORD.equalsIgnoreCase("PostMethod")) {
-							API_Functionlibrary.apiPost(Propertiesfileutil.getEnvValue("API_URI"), API_PAYLOAD,
+							API_Functionlibrary.apiPost(API_PAYLOAD,
 									Propertiesfileutil.getEnvValue("API_Post_BasePath"));
 							logger.log(Status.INFO, DESCRIPTION);
 						}
 						if (KEYWORD.equalsIgnoreCase("PutMethod")) {
-							API_Functionlibrary.apiPut(Propertiesfileutil.getEnvValue("API_URI"), API_PAYLOAD,
-									Propertiesfileutil.getEnvValue("API_Put_BasePath"));
+							API_Functionlibrary.apiPut(API_PAYLOAD, Propertiesfileutil.getEnvValue("API_Put_BasePath"));
 							logger.log(Status.INFO, DESCRIPTION);
 						}
 						if (KEYWORD.equalsIgnoreCase("DeleteMethod")) {
-							API_Functionlibrary.apiDelete(Propertiesfileutil.getEnvValue("API_URI"),
-									Propertiesfileutil.getEnvValue("API_Delete_BasePath"));
+							API_Functionlibrary.apiDelete(Propertiesfileutil.getEnvValue("API_Delete_BasePath"));
 							logger.log(Status.INFO, DESCRIPTION);
 						}
 						if (KEYWORD.equalsIgnoreCase("GetMethod")) {
-							API_Functionlibrary.apiGet(Propertiesfileutil.getEnvValue("API_URI"),
-									Propertiesfileutil.getEnvValue("API_Get_BasePath"));
+							API_Functionlibrary.apiGet(Propertiesfileutil.getEnvValue("API_Get_BasePath"));
 							logger.log(Status.INFO, DESCRIPTION);
 						}
 						if (KEYWORD.equalsIgnoreCase("GetStatusCode")) {
@@ -276,6 +323,12 @@ public class Driverscript {
 						report.flush();
 						break;
 					}
+					if (excel.getdata(TCmodule, j, 5).equalsIgnoreCase("chrome")
+							|| excel.getdata(TCmodule, j, 5).equalsIgnoreCase("firefox")
+							|| excel.getdata(TCmodule, j, 5).equalsIgnoreCase("ie")) {
+						Web_Functionlibrary.closedriver(Driverscript.driver);
+						System.out.println("Browsers Closed");
+					}
 				}
 				if (Modulestatus.equalsIgnoreCase("true")) {
 					Excelfileutil.setData("mastertestcases", i, 3, "Passed");
@@ -286,10 +339,8 @@ public class Driverscript {
 			} else {
 				Excelfileutil.setData("mastertestcases", i, 3, "Not Executed");
 			}
-
 		}
-		Web_Functionlibrary.closedriver(Driverscript.driver);
-		System.out.println("Browsers Closed");
+
 		if (testFail == true) {
 			Assert.fail(failMsg.toString());
 		}

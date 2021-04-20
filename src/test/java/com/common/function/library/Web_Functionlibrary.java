@@ -88,6 +88,10 @@ public class Web_Functionlibrary {
 			WebDriverManager.chromedriver().setup();
 			// System.setProperty("webdriver.chrome.driver","D:\\Automation\\chromedriver_win32");
 			driver = new ChromeDriver();
+		} else if (prop.getProperty(columns.get(5)).equalsIgnoreCase("ie")) {
+			WebDriverManager.iedriver().setup();
+			// System.setProperty("webdriver.ie.driver","commonjarfiles/IEDriverServer.exe");
+			driver = new InternetExplorerDriver();
 		} else if (prop.getProperty(columns.get(6)).equalsIgnoreCase("mobile")) {
 
 			{
@@ -138,12 +142,6 @@ public class Web_Functionlibrary {
 						e.printStackTrace();
 					}
 
-				}
-
-				else if (prop.getProperty(columns.get(5)).equalsIgnoreCase("ie")) {
-					WebDriverManager.iedriver().setup();
-					// System.setProperty("webdriver.ie.driver","commonjarfiles/IEDriverServer.exe");
-					driver = new InternetExplorerDriver();
 				} else if (prop.getProperty(columns.get(6)).equalsIgnoreCase("browserstack")) {
 					String USERNAME = Propertiesfileutil.getEnvValue("BROWSERSTACK_USERNAME");
 					String AUTOMATE_KEY = Propertiesfileutil.getEnvValue("BROWSERSTACK_AUTOMATEKEY");

@@ -5,23 +5,52 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.testng.annotations.Listeners;
 
+import com.utilities.Propertiesfileutil;
+
 import io.qameta.allure.Step;
 import io.restassured.RestAssured;
+import io.restassured.authentication.PreemptiveBasicAuthScheme;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
-import io.restassured.specification.RequestSpecification;
 
 @Listeners(TestListener.class)
 public class API_Functionlibrary {
 
-	public static RequestSpecification httpRequest;
+	public static RestAssured restAssured;
 	public static String responsebody;
 	public static Response response;
+	private static String URI;
+
+	@Step("Method to API URI")
+	public static String getWebServiceURI() throws Exception {
+		try {
+			URI = Propertiesfileutil.getEnvValue("API_URI");
+			RestAssured.baseURI = URI;
+		} catch (Exception e) {
+			e.printStackTrace();
+		} catch (Throwable e) {
+
+			e.printStackTrace();
+		}
+		return URI;
+
+	}
+
+	@Step("Method to add parameter in URI")
+	public static String addQueryParameterInWebServiceURI(String queryParameter) throws Exception {
+		try {
+			URI = URI + "?" + queryParameter;
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return URI;
+
+	}
 
 	@Step("API Get Method")
-	public static void apiGet(String URI, String BasePath) {
+	public static void apiGet(String BasePath) {
 		try {
-			RestAssured.baseURI = URI;
 			response = given().contentType("application/json").when().get(BasePath).then().assertThat().statusCode(200)
 					.and().extract().response();
 			System.out.println("Get Method Executed Successfully");
@@ -31,9 +60,8 @@ public class API_Functionlibrary {
 	}
 
 	@Step("API Post Method")
-	public static void apiPost(String URI, String Body, String BasePath) throws Exception {
+	public static void apiPost(String Body, String BasePath) throws Exception {
 		try {
-			RestAssured.baseURI = URI;
 			response = given().contentType(ContentType.JSON).body(Body).when().post(BasePath).then().assertThat()
 					.statusCode(201).and().extract().response();
 			System.out.println("Post Method Executed Successfully");
@@ -43,9 +71,8 @@ public class API_Functionlibrary {
 	}
 
 	@Step("API Put Method")
-	public static void apiPut(String URI, String Body, String BasePath) throws Exception {
+	public static void apiPut(String Body, String BasePath) throws Exception {
 		try {
-			RestAssured.baseURI = URI;
 			response = given().contentType(ContentType.JSON).body(Body).when().put(BasePath).then().assertThat()
 					.statusCode(200).and().extract().response();
 			System.out.println("Put Method Executed Successfully");
@@ -55,9 +82,8 @@ public class API_Functionlibrary {
 	}
 
 	@Step("API Delete Method")
-	public static void apiDelete(String URI, String BasePath) throws Exception {
+	public static void apiDelete(String BasePath) throws Exception {
 		try {
-			RestAssured.baseURI = URI;
 			response = given().contentType(ContentType.JSON).when().delete(BasePath).then().assertThat().statusCode(204)
 					.and().extract().response();
 			System.out.println("Delete Method Executed Successfully");
@@ -67,14 +93,10 @@ public class API_Functionlibrary {
 	}
 
 	@Step("API Post Method with cookie")
-	public static void addCookieAndDoPostCall(String URI, String body, String cookie, String BasePath)
-			throws Exception {
+	public static void addCookieAndDoPostCall(String body, String cookie, String BasePath) throws Exception {
 		try {
-			RestAssured.baseURI = URI;
 			response = given().cookie(cookie).contentType("application/json").when().body(body).post(BasePath).then()
 					.assertThat().statusCode(201).and().extract().response();
-			responsebody = response.getBody().asString();
-			System.out.println(responsebody);
 			System.out.println("Post Method Executed Successfully with cookie");
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -149,5 +171,70 @@ public class API_Functionlibrary {
 			System.out.println("Execption in Error code, no match found: " + e.getMessage());
 		}
 		return responsebody;
+	}
+
+	@Step("API Method for Bearer Token Authentication")
+	public static void bearerTokenAuthentication(String username, String password, String bearerToken)
+			throws Exception {
+		try {
+			given().headers("Authorization", "Bearer " + bearerToken, "Content-Type", ContentType.JSON, "Accept",
+					ContentType.JSON);
+			System.out.println("Bearer Authentication successfully");
+		} catch (Exception e) {
+			System.out.println("Execption in Bearer Authentication: " + e.getMessage());
+		}
+	}
+
+	@Step("API Method for Form Authentication")
+	public static void formAuthentication(String username, String password) throws Exception {
+		try {
+
+			System.out.println("Form Authentication successfully");
+		} catch (Exception e) {
+			System.out.println("Execption in Form Authentication: " + e.getMessage());
+		}
+	}
+
+	@Step("API Method for Digest Authentication")
+	public static void digestAuthentication(String username, String password) throws Exception {
+		try {
+
+			System.out.println("Digest Authentication successfully");
+		} catch (Exception e) {
+			System.out.println("Execption in Digest Authentication: " + e.getMessage());
+		}
+	}
+
+	@Step("API Method for OAth2 Authentication")
+	public static void OATH2Authentication(String username, String password) throws Exception {
+		try {
+
+			System.out.println("OAth2 Authentication successfully");
+		} catch (Exception e) {
+			System.out.println("Execption in OAth2 Authentication: " + e.getMessage());
+		}
+	}
+
+	@Step("API Basic Authentication")
+	public static void requestWithBasicAuthentication(String username, String password) throws Exception {
+		try {
+			given().auth().basic(username, password);
+			System.out.println("Basic Authentication successfully");
+		} catch (Exception e) {
+			System.out.println("Execption in basic Authentication: " + e.getMessage());
+		}
+	}
+
+	@Step("API Preemptive Authentication")
+	public static void requestWithPreemptiveAuthentication(String username, String password) throws Exception {
+		try {
+			PreemptiveBasicAuthScheme authScheme = new PreemptiveBasicAuthScheme();
+			authScheme.setUserName(username);
+			authScheme.setPassword(password);
+			RestAssured.authentication = authScheme;
+			System.out.println("Preemitive Authentication successfully");
+		} catch (Exception e) {
+			System.out.println("Execption in Preemitive Authentication: " + e.getMessage());
+		}
 	}
 }
