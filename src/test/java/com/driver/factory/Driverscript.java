@@ -16,9 +16,10 @@ import com.aventstack.extentreports.ExtentTest;
 import com.aventstack.extentreports.MediaEntityBuilder;
 import com.aventstack.extentreports.Status;
 import com.aventstack.extentreports.reporter.ExtentHtmlReporter;
-import com.common.function.library.Web_Functionlibrary;
-import com.common.function.library.API_Functionlibrary;
+import com.common.function.library.APIFunctionLibrary;
+import com.common.function.library.MobileFunctionLibrary;
 import com.common.function.library.TestListener;
+import com.common.function.library.WebFunctionLibrary;
 import com.utilities.Excelfileutil;
 import com.utilities.Propertiesfileutil;
 
@@ -53,7 +54,7 @@ public class Driverscript {
 				TCmodule = excel.getdata("mastertestcases", i, 1);
 				// generate extent report
 				htmlreporter = new ExtentHtmlReporter(
-						"./Reports/" + TCmodule + Web_Functionlibrary.generateDate() + ".html");
+						"./Reports/" + TCmodule + WebFunctionLibrary.generateDate() + ".html");
 				htmlreporter.config().setReportName("Execution results for test" + TCmodule);
 				report = new ExtentReports();
 				report.attachReporter(htmlreporter);
@@ -66,8 +67,9 @@ public class Driverscript {
 					String KEYWORD = excel.getdata(TCmodule, j, 1);
 					String OBJECTNAME = excel.getdata(TCmodule, j, 2);
 					String LOCATOR = excel.getdata(TCmodule, j, 3);
-					String TEST_DATA = excel.getdata(TCmodule, j, 4);
-					String API_PAYLOAD = excel.getdata(TCmodule, j, 8);
+					String TEST_DATA_1 = excel.getdata(TCmodule, j, 4);
+					String TEST_DATA_2 = excel.getdata(TCmodule, j, 5);
+					String API_PAYLOAD = excel.getdata(TCmodule, j, 9);
 
 					ArrayList<String> list = new ArrayList<String>();
 					list.add(excel.getdata(TCmodule, j, 0));
@@ -79,14 +81,15 @@ public class Driverscript {
 					list.add(excel.getdata(TCmodule, j, 6));
 					list.add(excel.getdata(TCmodule, j, 7));
 					list.add(excel.getdata(TCmodule, j, 8));
+					list.add(excel.getdata(TCmodule, j, 9));
 
 					try {
 						if (KEYWORD.equalsIgnoreCase("startbrowser")) {
-							driver = Web_Functionlibrary.startbrowser(driver, Propertiesfileutil.getEnvValues(), list);
+							driver = WebFunctionLibrary.startbrowser(driver, Propertiesfileutil.getEnvValues(), list);
 							// logger.log(Status.INFO, DESCRIPTION);
 						}
 						if (KEYWORD.equalsIgnoreCase("openapplication")) {
-							Web_Functionlibrary.openapplication(driver, Propertiesfileutil.getEnvValues(), list);
+							WebFunctionLibrary.openapplication(driver, Propertiesfileutil.getEnvValues(), list);
 							// logger.log(Status.INFO, DESCRIPTION);
 
 							logger.log(Status.INFO, DESCRIPTION, MediaEntityBuilder
@@ -95,13 +98,13 @@ public class Driverscript {
 
 							File src = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
 							String destination = ("./Screenshot/" + DESCRIPTION + "_"
-									+ Web_Functionlibrary.generateDate() + ".png");
+									+ WebFunctionLibrary.generateDate() + ".png");
 							File dest = new File(destination);
 							FileUtils.copyFile(src, dest);
 
 						}
 						if (KEYWORD.equalsIgnoreCase("clickaction")) {
-							Web_Functionlibrary.clickaction(driver, Propertiesfileutil.getObjectLocators(), list);
+							WebFunctionLibrary.clickaction(driver, Propertiesfileutil.getObjectLocators(), list);
 							// logger.log(Status.INFO, DESCRIPTION);
 
 							logger.log(Status.INFO, DESCRIPTION, MediaEntityBuilder
@@ -109,187 +112,269 @@ public class Driverscript {
 							captureImage(driver);
 						}
 						if (KEYWORD.equalsIgnoreCase("typeaction")) {
-							Web_Functionlibrary.typeaction(driver, Propertiesfileutil.getObjectLocators(), list);
+							WebFunctionLibrary.typeaction(driver, Propertiesfileutil.getObjectLocators(), list);
 							logger.log(Status.INFO, DESCRIPTION);
 
 						}
 						if (KEYWORD.equalsIgnoreCase("waiting")) {
-							Web_Functionlibrary.waiting(driver, Propertiesfileutil.getObjectLocators(), list);
+							WebFunctionLibrary.waiting(driver, Propertiesfileutil.getObjectLocators(), list);
 							logger.log(Status.INFO, DESCRIPTION);
 						}
 						if (KEYWORD.equalsIgnoreCase("closeapplication")) {
-							Web_Functionlibrary.closeapplication(driver);
+							WebFunctionLibrary.closeapplication(driver);
 							logger.log(Status.INFO, DESCRIPTION);
 						}
 						if (KEYWORD.equalsIgnoreCase("titlevalidation")) {
-							Web_Functionlibrary.titlevalidation(driver, TEST_DATA);
+							WebFunctionLibrary.titlevalidation(driver, TEST_DATA_1);
 							logger.log(Status.INFO, DESCRIPTION);
 						}
 						if (KEYWORD.equalsIgnoreCase("textvalidation")) {
-							Web_Functionlibrary.textvalidation(driver, Propertiesfileutil.getObjectLocators(),
-									TEST_DATA, list);
+							WebFunctionLibrary.textvalidation(driver, Propertiesfileutil.getObjectLocators(),
+									TEST_DATA_1, list);
 							logger.log(Status.INFO, DESCRIPTION);
 						}
 						if (KEYWORD.equalsIgnoreCase("alertPopUp")) {
-							Web_Functionlibrary.alertPopUp(driver);
+							WebFunctionLibrary.alertPopUp(driver);
 							logger.log(Status.INFO, DESCRIPTION);
 						}
 						if (KEYWORD.equalsIgnoreCase("switchWindow")) {
-							Web_Functionlibrary.switchWindow(driver);
+							WebFunctionLibrary.switchWindow(driver);
 							logger.log(Status.INFO, DESCRIPTION);
 						}
 						if (KEYWORD.equalsIgnoreCase("switchFrame")) {
-							Web_Functionlibrary.switchFrame(driver, Propertiesfileutil.getObjectLocators(), list);
+							WebFunctionLibrary.switchFrame(driver, Propertiesfileutil.getObjectLocators(), list);
 							logger.log(Status.INFO, DESCRIPTION);
 						}
 						if (KEYWORD.equalsIgnoreCase("mouseHover")) {
-							Web_Functionlibrary.mouseHover(driver, Propertiesfileutil.getObjectLocators(), list);
+							WebFunctionLibrary.mouseHover(driver, Propertiesfileutil.getObjectLocators(), list);
 							logger.log(Status.INFO, DESCRIPTION);
 						}
 						if (KEYWORD.equalsIgnoreCase("rightClick")) {
-							Web_Functionlibrary.rightClick(driver, Propertiesfileutil.getObjectLocators(), list);
+							WebFunctionLibrary.rightClick(driver, Propertiesfileutil.getObjectLocators(), list);
 							logger.log(Status.INFO, DESCRIPTION);
 						}
 						if (KEYWORD.equalsIgnoreCase("doubleClick")) {
-							Web_Functionlibrary.doubleClick(driver, Propertiesfileutil.getObjectLocators(), list);
+							WebFunctionLibrary.doubleClick(driver, Propertiesfileutil.getObjectLocators(), list);
 							logger.log(Status.INFO, DESCRIPTION);
 						}
 						if (KEYWORD.equalsIgnoreCase("dragDrop")) {
-							Web_Functionlibrary.dragDrop(driver, Propertiesfileutil.getObjectLocators(), list);
+							WebFunctionLibrary.dragDrop(driver, Propertiesfileutil.getObjectLocators(), list);
 							logger.log(Status.INFO, DESCRIPTION);
 						}
 						if (KEYWORD.equalsIgnoreCase("highlightElement")) {
-							Web_Functionlibrary.highlightElement(driver, Propertiesfileutil.getObjectLocators(), list);
+							WebFunctionLibrary.highlightElement(driver, Propertiesfileutil.getObjectLocators(), list);
 							logger.log(Status.INFO, DESCRIPTION);
 						}
 						if (KEYWORD.equalsIgnoreCase("dehighlightElement")) {
-							Web_Functionlibrary.dehighlightElement(driver, Propertiesfileutil.getObjectLocators(),
-									list);
+							WebFunctionLibrary.dehighlightElement(driver, Propertiesfileutil.getObjectLocators(), list);
 							logger.log(Status.INFO, DESCRIPTION);
 						}
 						if (KEYWORD.equalsIgnoreCase("verifyElementPresent")) {
-							Web_Functionlibrary.verifyElementPresent(driver, Propertiesfileutil.getObjectLocators(),
+							WebFunctionLibrary.verifyElementPresent(driver, Propertiesfileutil.getObjectLocators(),
 									list);
 							logger.log(Status.INFO, DESCRIPTION);
 						}
 						if (KEYWORD.equalsIgnoreCase("verifyElementEnabled")) {
-							Web_Functionlibrary.verifyElementEnabled(driver, Propertiesfileutil.getObjectLocators(),
+							WebFunctionLibrary.verifyElementEnabled(driver, Propertiesfileutil.getObjectLocators(),
 									list);
 							logger.log(Status.INFO, DESCRIPTION);
 						}
 						if (KEYWORD.equalsIgnoreCase("LinkPresent")) {
-							Web_Functionlibrary.LinkPresent(driver, list);
+							WebFunctionLibrary.LinkPresent(driver, list);
 							logger.log(Status.INFO, DESCRIPTION);
 						}
 						if (KEYWORD.equalsIgnoreCase("dropdownaction")) {
-							Web_Functionlibrary.dropdownaction(driver, LOCATOR, OBJECTNAME, TEST_DATA);
+							WebFunctionLibrary.dropdownaction(driver, LOCATOR, OBJECTNAME, TEST_DATA_1);
 							logger.log(Status.INFO, DESCRIPTION);
 						}
 
 						if (KEYWORD.equalsIgnoreCase("Scrolldownaction")) {
-							Web_Functionlibrary.ScrollDownAction(driver, Propertiesfileutil.getObjectLocators(), list);
+							WebFunctionLibrary.ScrollDownAction(driver, Propertiesfileutil.getObjectLocators(), list);
 							logger.log(Status.INFO, DESCRIPTION);
 						}
 						if (KEYWORD.equalsIgnoreCase("GetWebServiceURI")) {
-							API_Functionlibrary.getWebServiceURI();
+							APIFunctionLibrary.getWebServiceURI();
 							logger.log(Status.INFO, DESCRIPTION);
 						}
 						if (KEYWORD.equalsIgnoreCase("AddQueryParameterInURI")) {
-							API_Functionlibrary.addQueryParameterInWebServiceURI(
+							APIFunctionLibrary.addQueryParameterInWebServiceURI(
 									Propertiesfileutil.getEnvValue("API_Query_param"));
 							logger.log(Status.INFO, DESCRIPTION);
 						}
 
 						if (KEYWORD.equalsIgnoreCase("BasicAuthentication")) {
-							API_Functionlibrary.requestWithBasicAuthentication(
+							APIFunctionLibrary.requestWithBasicAuthentication(
 									Propertiesfileutil.getEnvValue("API_Username"),
 									Propertiesfileutil.getEnvValue("API_Password"));
 							logger.log(Status.INFO, DESCRIPTION);
 						}
 
 						if (KEYWORD.equalsIgnoreCase("PreemptiveAuthentication")) {
-							API_Functionlibrary.requestWithPreemptiveAuthentication(
+							APIFunctionLibrary.requestWithPreemptiveAuthentication(
 									Propertiesfileutil.getEnvValue("API_Username"),
 									Propertiesfileutil.getEnvValue("API_Password"));
 							logger.log(Status.INFO, DESCRIPTION);
 						}
 
 						if (KEYWORD.equalsIgnoreCase("FormAuthentication")) {
-							API_Functionlibrary.formAuthentication(Propertiesfileutil.getEnvValue("API_Username"),
+							APIFunctionLibrary.formAuthentication(Propertiesfileutil.getEnvValue("API_Username"),
 									Propertiesfileutil.getEnvValue("API_Password"));
 							logger.log(Status.INFO, DESCRIPTION);
 						}
 
 						if (KEYWORD.equalsIgnoreCase("DigestAuthentication")) {
-							API_Functionlibrary.digestAuthentication(Propertiesfileutil.getEnvValue("API_Username"),
+							APIFunctionLibrary.digestAuthentication(Propertiesfileutil.getEnvValue("API_Username"),
 									Propertiesfileutil.getEnvValue("API_Password"));
 							logger.log(Status.INFO, DESCRIPTION);
 						}
 
 						if (KEYWORD.equalsIgnoreCase("BearerTokenAuthentication")) {
-							API_Functionlibrary.bearerTokenAuthentication(
-									Propertiesfileutil.getEnvValue("API_Username"),
+							APIFunctionLibrary.bearerTokenAuthentication(Propertiesfileutil.getEnvValue("API_Username"),
 									Propertiesfileutil.getEnvValue("API_Password"),
 									Propertiesfileutil.getEnvValue("API_Bearer_Token"));
 							logger.log(Status.INFO, DESCRIPTION);
 						}
 
 						if (KEYWORD.equalsIgnoreCase("OATH2Authentication")) {
-							API_Functionlibrary.OATH2Authentication(Propertiesfileutil.getEnvValue("API_Username"),
+							APIFunctionLibrary.OATH2Authentication(Propertiesfileutil.getEnvValue("API_Username"),
 									Propertiesfileutil.getEnvValue("API_Password"));
 							logger.log(Status.INFO, DESCRIPTION);
 						}
 
 						if (KEYWORD.equalsIgnoreCase("PostMethod")) {
-							API_Functionlibrary.apiPost(API_PAYLOAD,
+							APIFunctionLibrary.apiPost(API_PAYLOAD,
 									Propertiesfileutil.getEnvValue("API_Post_BasePath"));
 							logger.log(Status.INFO, DESCRIPTION);
 						}
 						if (KEYWORD.equalsIgnoreCase("PutMethod")) {
-							API_Functionlibrary.apiPut(API_PAYLOAD, Propertiesfileutil.getEnvValue("API_Put_BasePath"));
+							APIFunctionLibrary.apiPut(API_PAYLOAD, Propertiesfileutil.getEnvValue("API_Put_BasePath"));
 							logger.log(Status.INFO, DESCRIPTION);
 						}
 						if (KEYWORD.equalsIgnoreCase("DeleteMethod")) {
-							API_Functionlibrary.apiDelete(Propertiesfileutil.getEnvValue("API_Delete_BasePath"));
+							APIFunctionLibrary.apiDelete(Propertiesfileutil.getEnvValue("API_Delete_BasePath"));
 							logger.log(Status.INFO, DESCRIPTION);
 						}
 						if (KEYWORD.equalsIgnoreCase("GetMethod")) {
-							API_Functionlibrary.apiGet(Propertiesfileutil.getEnvValue("API_Get_BasePath"));
+							APIFunctionLibrary.apiGet(Propertiesfileutil.getEnvValue("API_Get_BasePath"));
 							logger.log(Status.INFO, DESCRIPTION);
 						}
 						if (KEYWORD.equalsIgnoreCase("GetStatusCode")) {
-							API_Functionlibrary.getStatusCode();
+							APIFunctionLibrary.getStatusCode();
 							logger.log(Status.INFO, DESCRIPTION);
 						}
 						if (KEYWORD.equalsIgnoreCase("GetResponse")) {
-							API_Functionlibrary.getStatusCode();
+							APIFunctionLibrary.getResponse();
 							logger.log(Status.INFO, DESCRIPTION);
 						}
 						if (KEYWORD.equalsIgnoreCase("GetStatusLine")) {
-							API_Functionlibrary.getStatusLine();
+							APIFunctionLibrary.getStatusLine();
+							logger.log(Status.INFO, DESCRIPTION);
+						}
+						if (KEYWORD.equalsIgnoreCase("GetValueForIntKeyInResponse")) {
+							APIFunctionLibrary.getValueForIntKeyInResponse(TEST_DATA_1);
+							logger.log(Status.INFO, DESCRIPTION);
+						}
+						if (KEYWORD.equalsIgnoreCase("GetValueForStringKeyInResponse")) {
+							APIFunctionLibrary.getValueForStringKeyInResponse(TEST_DATA_1);
+							logger.log(Status.INFO, DESCRIPTION);
+						}
+						if (KEYWORD.equalsIgnoreCase("GetValueForKeyInResponseArray")) {
+							APIFunctionLibrary.getValueForKeyInResponseArray(TEST_DATA_1, TEST_DATA_2);
 							logger.log(Status.INFO, DESCRIPTION);
 						}
 						if (KEYWORD.equalsIgnoreCase("GetErrorCodeInResponse")) {
-							API_Functionlibrary.getErrorCodeInResponse();
+							APIFunctionLibrary.getErrorCodeInResponse();
 							logger.log(Status.INFO, DESCRIPTION);
 						}
 						if (KEYWORD.equalsIgnoreCase("GetErrordescriptionInResponse")) {
-							API_Functionlibrary.getErrordescriptionInResponse();
+							APIFunctionLibrary.getErrordescriptionInResponse();
 							logger.log(Status.INFO, DESCRIPTION);
 						}
 						if (KEYWORD.equalsIgnoreCase("CheckErrorCodeResponse")) {
-							API_Functionlibrary.checkErrorCodeResponse("200");
+							APIFunctionLibrary.checkErrorCodeResponse("200");
+							logger.log(Status.INFO, DESCRIPTION);
+						}
+						if (KEYWORD.equalsIgnoreCase("ToBack")) {
+							MobileFunctionLibrary.toBack(mobiledriver);
 							logger.log(Status.INFO, DESCRIPTION);
 						}
 
-						Excelfileutil.setData(TCmodule, j, 9, "passed");
+						if (KEYWORD.equalsIgnoreCase("LongPress")) {
+							MobileFunctionLibrary.longPress(mobiledriver, LOCATOR);
+							logger.log(Status.INFO, DESCRIPTION);
+						}
+
+						if (KEYWORD.equalsIgnoreCase("ScrollDown")) {
+							MobileFunctionLibrary.scrollDown(mobiledriver);
+							logger.log(Status.INFO, DESCRIPTION);
+						}
+
+						if (KEYWORD.equalsIgnoreCase("Scrollup")) {
+							MobileFunctionLibrary.scrollup(mobiledriver);
+							logger.log(Status.INFO, DESCRIPTION);
+						}
+
+						if (KEYWORD.equalsIgnoreCase("IsElementPresent")) {
+							MobileFunctionLibrary.isElementPresent(mobiledriver, Propertiesfileutil.getObjectLocators(),
+									list);
+							logger.log(Status.INFO, DESCRIPTION);
+						}
+
+						if (KEYWORD.equalsIgnoreCase("HideKeyboard")) {
+							MobileFunctionLibrary.hideKeyboard(mobiledriver);
+							logger.log(Status.INFO, DESCRIPTION);
+						}
+
+						if (KEYWORD.equalsIgnoreCase("Type")) {
+							MobileFunctionLibrary.type(mobiledriver, Propertiesfileutil.getObjectLocators(), list,
+									TEST_DATA_1);
+							logger.log(Status.INFO, DESCRIPTION);
+						}
+
+						if (KEYWORD.equalsIgnoreCase("Enter")) {
+							MobileFunctionLibrary.enter(mobiledriver);
+							logger.log(Status.INFO, DESCRIPTION);
+						}
+
+						if (KEYWORD.equalsIgnoreCase("ClearAppData")) {
+							MobileFunctionLibrary.clearAppData(mobiledriver);
+							logger.log(Status.INFO, DESCRIPTION);
+						}
+
+						if (KEYWORD.equalsIgnoreCase("SwipeIOS")) {
+							MobileFunctionLibrary.swipeIOS(mobiledriver, Propertiesfileutil.getObjectLocators(), list,
+									TEST_DATA_1);
+							logger.log(Status.INFO, DESCRIPTION);
+						}
+
+						if (KEYWORD.equalsIgnoreCase("EnterInput")) {
+							MobileFunctionLibrary.enterInput(mobiledriver, Propertiesfileutil.getObjectLocators(), list,
+									TEST_DATA_1);
+							logger.log(Status.INFO, DESCRIPTION);
+						}
+
+						if (KEYWORD.equalsIgnoreCase("Tap")) {
+							MobileFunctionLibrary.tap(mobiledriver, Propertiesfileutil.getObjectLocators(), list);
+							logger.log(Status.INFO, DESCRIPTION);
+
+						}
+						if (KEYWORD.equalsIgnoreCase("GetWebElement")) {
+							MobileFunctionLibrary.getWebElement(mobiledriver, Propertiesfileutil.getObjectLocators(),
+									list);
+							logger.log(Status.INFO, DESCRIPTION);
+						}
+						if (KEYWORD.equalsIgnoreCase("PasteTxt")) {
+							MobileFunctionLibrary.pasteTxt(mobiledriver);
+							logger.log(Status.INFO, DESCRIPTION);
+						}
+						Excelfileutil.setData(TCmodule, j, 10, "passed");
 						Modulestatus = "true";
 						logger.log(Status.INFO, DESCRIPTION);
 
 						report.flush();
 
 					} catch (Exception e) {
-						Excelfileutil.setData(TCmodule, j, 9, "failed");
+						Excelfileutil.setData(TCmodule, j, 10, "failed");
 						Modulestatus = "false";
 						logger.log(Status.FAIL, DESCRIPTION + " failed");
 						// take screenshot
@@ -298,7 +383,7 @@ public class Driverscript {
 						captureImage(driver);
 
 						File src = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
-						String destination = ("./Screenshot/" + DESCRIPTION + "_" + Web_Functionlibrary.generateDate()
+						String destination = ("./Screenshot/" + DESCRIPTION + "_" + WebFunctionLibrary.generateDate()
 								+ ".png");
 						File dest = new File(destination);
 						FileUtils.copyFile(src, dest);
@@ -308,7 +393,7 @@ public class Driverscript {
 					}
 
 					catch (AssertionError a) {
-						Excelfileutil.setData(TCmodule, j, 9, "failed");
+						Excelfileutil.setData(TCmodule, j, 10, "failed");
 						Modulestatus = "false";
 						failMsg.append(a.getMessage() + "in " + TCmodule + "sheet , ");
 						// take screenshot
@@ -316,18 +401,12 @@ public class Driverscript {
 								MediaEntityBuilder.createScreenCaptureFromBase64String(captureImage(driver)).build());
 						captureImage(driver);
 						File src = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
-						String destination = ("./Screenshot/" + DESCRIPTION + "_" + Web_Functionlibrary.generateDate()
+						String destination = ("./Screenshot/" + DESCRIPTION + "_" + WebFunctionLibrary.generateDate()
 								+ ".png");
 						File dest = new File(destination);
 						FileUtils.copyFile(src, dest);
 						report.flush();
 						break;
-					}
-					if (excel.getdata(TCmodule, j, 5).equalsIgnoreCase("chrome")
-							|| excel.getdata(TCmodule, j, 5).equalsIgnoreCase("firefox")
-							|| excel.getdata(TCmodule, j, 5).equalsIgnoreCase("ie")) {
-						Web_Functionlibrary.closedriver(Driverscript.driver);
-						System.out.println("Browsers Closed");
 					}
 				}
 				if (Modulestatus.equalsIgnoreCase("true")) {
@@ -340,7 +419,10 @@ public class Driverscript {
 				Excelfileutil.setData("mastertestcases", i, 3, "Not Executed");
 			}
 		}
-
+		if (driver != null) {
+			WebFunctionLibrary.closedriver(Driverscript.driver);
+			System.out.println("Browsers Closed");
+		}
 		if (testFail == true) {
 			Assert.fail(failMsg.toString());
 		}
@@ -349,7 +431,7 @@ public class Driverscript {
 
 	public void failstatusonexcel(String TCmodule, String Modulestatus, int j) {
 		try {
-			Excelfileutil.setData(TCmodule, j, 9, "failed");
+			Excelfileutil.setData(TCmodule, j, 10, "failed");
 			Modulestatus = "false";
 			report.flush();
 
