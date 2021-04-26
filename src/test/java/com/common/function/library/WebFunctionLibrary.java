@@ -1,7 +1,5 @@
 package com.common.function.library;
 
-import java.io.File;
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
@@ -11,7 +9,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
@@ -33,16 +30,9 @@ import org.testng.annotations.Listeners;
 
 import com.driver.factory.Driverscript;
 import com.jcraft.jsch.Logger;
-import com.ssts.pcloudy.Connector;
-import com.ssts.pcloudy.dto.file.PDriveFileDTO;
-import com.ssts.pcloudy.dto.resign.ResignFileDownloadResultDto;
-import com.ssts.pcloudy.dto.resign.ResignFileResultDTO;
-import com.ssts.pcloudy.dto.resign.ResignProgressStatusResultDTO;
-import com.ssts.pcloudy.exception.ConnectError;
 import com.utilities.Excelfileutil;
 import com.utilities.Propertiesfileutil;
 
-import io.appium.java_client.MobileElement;
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.android.AndroidElement;
 import io.appium.java_client.ios.IOSDriver;
@@ -68,11 +58,11 @@ public class WebFunctionLibrary {
 	public static RequestSpecification httpRequest;
 	public static String responsebody;
 	public static Response response;
-	public static PDriveFileDTO uploadedApp = null;
-	public static ResignFileResultDTO resigndto = null;
-	public static ResignProgressStatusResultDTO progressDto = null;
-	public static ResignFileDownloadResultDto downloadDto = null;
-	public static PDriveFileDTO dto = null;
+	// public static PDriveFileDTO uploadedApp = null;
+	// public static ResignFileResultDTO resigndto = null;
+	// public static ResignProgressStatusResultDTO progressDto = null;
+	// public static ResignFileDownloadResultDto downloadDto = null;
+	// public static PDriveFileDTO dto = null;
 
 	public static By getLocator(Properties p, String objectName, String locator) {
 		if (locator.equalsIgnoreCase("id")) {
@@ -159,193 +149,203 @@ public class WebFunctionLibrary {
 
 				}
 
-				else if (prop.getProperty(columns.get(8)).equalsIgnoreCase("cloudiOS")) {
-
-					Connector con = new Connector("https://device.pcloudy.com");
-					try {
-						authToken = con.authenticateUser(Propertiesfileutil.getEnvValue("Username"),
-								Propertiesfileutil.getEnvValue("Apikey"));
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (ConnectError e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-
-					// Delete App from Pcloudy
-
-					System.out.println("Going to delete ipa file");
-					try {
-						con.deleteFileFromCloud(authToken, "Artisan.ipa", "data");
-					} catch (IOException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
-					System.out.println("Able to delete ipa file");
-
-					File fileToUpload = new File(Propertiesfileutil.getEnvValue("CloudiOSApp"));
-
-					try {
-						uploadedApp = con.uploadApp(authToken, fileToUpload);
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (ConnectError e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-
-					try {
-						resigndto = con.ResignApis().resignInitiation(authToken, uploadedApp);
-					} catch (ConnectError e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					// Initiate the Resigning process.
-
-					while (true) {
-						// get the progress of resign process of app.
-						try {
-							progressDto = con.ResignApis().resignProgress(authToken, resigndto.resign_token,
-									uploadedApp);
-						} catch (ConnectError e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						} catch (IOException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-						if (progressDto.resign_status == 100)
-							break;
-					}
-
-					// Download the resigned ipa from resigning server and placed in my app data.
-					try {
-						downloadDto = con.ResignApis().resignFileDownload(authToken, resigndto.resign_token,
-								uploadedApp);
-					} catch (ConnectError e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					// This Api renames the resigned app with the same name as that of
-					// original .ipa 
-					try {
-						dto = con.renameFile(authToken, downloadDto.resign_file, downloadDto.file, true);
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (ConnectError e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					System.out.println("Able to upload ipa file");
-					capa.setCapability("pCloudy_Username", Propertiesfileutil.getEnvValue("Username"));
-					capa.setCapability("pCloudy_ApiKey", Propertiesfileutil.getEnvValue("Apikey"));
-					capa.setCapability("pCloudy_ApplicationName", "Artisan.ipa");
-					capa.setCapability("pCloudy_DurationInMinutes", 30);
-					capa.setCapability("pCloudy_DeviceFullName", Propertiesfileutil.getEnvValue("CloudiOSDeviceName"));
-
-					capa.setCapability("newCommandTimeout", 600);
-					capa.setCapability("launchTimeout", 90000);
-					capa.setCapability("bundleId", "com.skillsoft.Percipio");
-					capa.setCapability("usePrebuiltWDA", false);
-					capa.setCapability("acceptAlerts", true);
-					capa.setCapability("automationName", "XCUITest");
-					System.out.println("Going to initialize driver");
-					driver = new IOSDriver<MobileElement>(new URL("https://device.pcloudy.com/appiumcloud/wd/hub"),
-							capa);
-
-					try {
-						Thread.sleep(10000);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-					System.out.println("Driver initialization Done");
-
-					// Use a higher value if your mobile elements take time to show up
-					driver.manage().timeouts().implicitlyWait(50, TimeUnit.SECONDS);
-				}
-
-				else if (prop.getProperty(columns.get(8)).equalsIgnoreCase("cloudAndroid")) {
-
-					Connector con = new Connector("https://device.pcloudy.com");
-					try {
-						authToken = con.authenticateUser(Propertiesfileutil.getEnvValue("Username"),
-								Propertiesfileutil.getEnvValue("Apikey"));
-					} catch (IOException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					} catch (ConnectError e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
-
-					// Delete App from Pcloudy
-
-					System.out.println("Going to delete apk");
-					try {
-						con.deleteFileFromCloud(authToken, "Artisan.apk", "data");
-					} catch (IOException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
-					System.out.println("Able to delete apk");
-
-					// UPload App to pCloudy
-
-					File fileToUpload = new File(Propertiesfileutil.getEnvValue("CloudAndroidApp"));
-					System.out.println("Going to upload apk file");
-					try {
-						@SuppressWarnings("unused")
-						PDriveFileDTO uploadedApp = con.uploadApp(authToken, fileToUpload);
-					} catch (IOException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					} catch (ConnectError e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
-
-					System.out.println("Able to upload apk file");
-
-					// Adding capabilities
-					capa.setCapability("pCloudy_Username", Propertiesfileutil.getEnvValue("Username"));
-					capa.setCapability("pCloudy_ApiKey", Propertiesfileutil.getEnvValue("Apikey"));
-					capa.setCapability("pCloudy_ApplicationName", "Artisan.apk");
-					capa.setCapability("pCloudy_DurationInMinutes", 20);
-					capa.setCapability("automationName", "uiautomator2");
-					// capa.setCapability("pCloudy_DeviceManafacturer", deviceName);
-					// capa.setCapability("pCloudy_DeviceVersion", "12.0.1");
-					capa.setCapability("pCloudy_DeviceFullName",
-							Propertiesfileutil.getEnvValue("CloudAndroidDeviceName"));
-
-					capa.setCapability("newCommandTimeout", 600);
-					capa.setCapability("launchTimeout", 90000);
-					capa.setCapability("appPackage", "com.skillsoft.Percipio");
-					capa.setCapability("appActivity", "com.skillsoft.Percipio.MainActivity");
-					capa.setCapability("automationName", "UiAutomator2");
-
-					System.out.println("Going to Initiate Driver");
-					driver = new AndroidDriver<MobileElement>(
-							new URL("https://skillsoft.pcloudy.com/appiumcloud/wd/hub"), capa);
-					System.out.println("Able to Initiate Driver");
-					// Driver.setAndroidDriver(driver);
-					// Reporting purpose
-					// devicename_report=Devicename;
-					try {
-						Thread.sleep(10000);
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				}
+				// else if (prop.getProperty(columns.get(8)).equalsIgnoreCase("cloudiOS")) {
+				//
+				// Connector con = new Connector("https://device.pcloudy.com");
+				// try {
+				// authToken = con.authenticateUser(Propertiesfileutil.getEnvValue("Username"),
+				// Propertiesfileutil.getEnvValue("Apikey"));
+				// } catch (IOException e) {
+				// // TODO Auto-generated catch block
+				// e.printStackTrace();
+				// } catch (ConnectError e) {
+				// // TODO Auto-generated catch block
+				// e.printStackTrace();
+				// }
+				//
+				// // Delete App from Pcloudy
+				//
+				// System.out.println("Going to delete ipa file");
+				// try {
+				// con.deleteFileFromCloud(authToken, "Artisan.ipa", "data");
+				// } catch (IOException e1) {
+				// // TODO Auto-generated catch block
+				// e1.printStackTrace();
+				// }
+				// System.out.println("Able to delete ipa file");
+				//
+				// File fileToUpload = new File(Propertiesfileutil.getEnvValue("CloudiOSApp"));
+				//
+				// try {
+				// uploadedApp = con.uploadApp(authToken, fileToUpload);
+				// } catch (IOException e) {
+				// // TODO Auto-generated catch block
+				// e.printStackTrace();
+				// } catch (ConnectError e) {
+				// // TODO Auto-generated catch block
+				// e.printStackTrace();
+				// }
+				//
+				// try {
+				// resigndto = con.ResignApis().resignInitiation(authToken, uploadedApp);
+				// } catch (ConnectError e) {
+				// // TODO Auto-generated catch block
+				// e.printStackTrace();
+				// } catch (IOException e) {
+				// // TODO Auto-generated catch block
+				// e.printStackTrace();
+				// }
+				// // Initiate the Resigning process.
+				//
+				// while (true) {
+				// // get the progress of resign process of app.
+				// try {
+				// progressDto = con.ResignApis().resignProgress(authToken,
+				// resigndto.resign_token,
+				// uploadedApp);
+				// } catch (ConnectError e) {
+				// // TODO Auto-generated catch block
+				// e.printStackTrace();
+				// } catch (IOException e) {
+				// // TODO Auto-generated catch block
+				// e.printStackTrace();
+				// }
+				// if (progressDto.resign_status == 100)
+				// break;
+				// }
+				//
+				// // Download the resigned ipa from resigning server and placed in my app data.
+				// try {
+				// downloadDto = con.ResignApis().resignFileDownload(authToken,
+				// resigndto.resign_token,
+				// uploadedApp);
+				// } catch (ConnectError e) {
+				// // TODO Auto-generated catch block
+				// e.printStackTrace();
+				// } catch (IOException e) {
+				// // TODO Auto-generated catch block
+				// e.printStackTrace();
+				// }
+				// // This Api renames the resigned app with the same name as that of
+				// // originalÂ .ipaÂ 
+				// try {
+				// dto = con.renameFile(authToken, downloadDto.resign_file, downloadDto.file,
+				// true);
+				// } catch (IOException e) {
+				// // TODO Auto-generated catch block
+				// e.printStackTrace();
+				// } catch (ConnectError e) {
+				// // TODO Auto-generated catch block
+				// e.printStackTrace();
+				// }
+				// System.out.println("Able to upload ipa file");
+				// capa.setCapability("pCloudy_Username",
+				// Propertiesfileutil.getEnvValue("Username"));
+				// capa.setCapability("pCloudy_ApiKey",
+				// Propertiesfileutil.getEnvValue("Apikey"));
+				// capa.setCapability("pCloudy_ApplicationName", "Artisan.ipa");
+				// capa.setCapability("pCloudy_DurationInMinutes", 30);
+				// capa.setCapability("pCloudy_DeviceFullName",
+				// Propertiesfileutil.getEnvValue("CloudiOSDeviceName"));
+				//
+				// capa.setCapability("newCommandTimeout", 600);
+				// capa.setCapability("launchTimeout", 90000);
+				// capa.setCapability("bundleId", "com.skillsoft.Percipio");
+				// capa.setCapability("usePrebuiltWDA", false);
+				// capa.setCapability("acceptAlerts", true);
+				// capa.setCapability("automationName", "XCUITest");
+				// System.out.println("Going to initialize driver");
+				// driver = new IOSDriver<MobileElement>(new
+				// URL("https://device.pcloudy.com/appiumcloud/wd/hub"),
+				// capa);
+				//
+				// try {
+				// Thread.sleep(10000);
+				// } catch (InterruptedException e) {
+				// e.printStackTrace();
+				// }
+				// System.out.println("Driver initialization Done");
+				//
+				// // Use a higher value if your mobile elements take time to show up
+				// driver.manage().timeouts().implicitlyWait(50, TimeUnit.SECONDS);
+				// }
+				//
+				// else if (prop.getProperty(columns.get(8)).equalsIgnoreCase("cloudAndroid")) {
+				//
+				// Connector con = new Connector("https://device.pcloudy.com");
+				// try {
+				// authToken = con.authenticateUser(Propertiesfileutil.getEnvValue("Username"),
+				// Propertiesfileutil.getEnvValue("Apikey"));
+				// } catch (IOException e1) {
+				// // TODO Auto-generated catch block
+				// e1.printStackTrace();
+				// } catch (ConnectError e1) {
+				// // TODO Auto-generated catch block
+				// e1.printStackTrace();
+				// }
+				//
+				// // Delete App from Pcloudy
+				//
+				// System.out.println("Going to delete apk");
+				// try {
+				// con.deleteFileFromCloud(authToken, "Artisan.apk", "data");
+				// } catch (IOException e1) {
+				// // TODO Auto-generated catch block
+				// e1.printStackTrace();
+				// }
+				// System.out.println("Able to delete apk");
+				//
+				// // UPload App to pCloudy
+				//
+				// File fileToUpload = new
+				// File(Propertiesfileutil.getEnvValue("CloudAndroidApp"));
+				// System.out.println("Going to upload apk file");
+				// try {
+				// @SuppressWarnings("unused")
+				// PDriveFileDTO uploadedApp = con.uploadApp(authToken, fileToUpload);
+				// } catch (IOException e1) {
+				// // TODO Auto-generated catch block
+				// e1.printStackTrace();
+				// } catch (ConnectError e1) {
+				// // TODO Auto-generated catch block
+				// e1.printStackTrace();
+				// }
+				//
+				// System.out.println("Able to upload apk file");
+				//
+				// // Adding capabilities
+				// capa.setCapability("pCloudy_Username",
+				// Propertiesfileutil.getEnvValue("Username"));
+				// capa.setCapability("pCloudy_ApiKey",
+				// Propertiesfileutil.getEnvValue("Apikey"));
+				// capa.setCapability("pCloudy_ApplicationName", "Artisan.apk");
+				// capa.setCapability("pCloudy_DurationInMinutes", 20);
+				// capa.setCapability("automationName", "uiautomator2");
+				// // capa.setCapability("pCloudy_DeviceManafacturer", deviceName);
+				// // capa.setCapability("pCloudy_DeviceVersion", "12.0.1");
+				// capa.setCapability("pCloudy_DeviceFullName",
+				// Propertiesfileutil.getEnvValue("CloudAndroidDeviceName"));
+				//
+				// capa.setCapability("newCommandTimeout", 600);
+				// capa.setCapability("launchTimeout", 90000);
+				// capa.setCapability("appPackage", "com.skillsoft.Percipio");
+				// capa.setCapability("appActivity", "com.skillsoft.Percipio.MainActivity");
+				// capa.setCapability("automationName", "UiAutomator2");
+				//
+				// System.out.println("Going to Initiate Driver");
+				// driver = new AndroidDriver<MobileElement>(
+				// new URL("https://skillsoft.pcloudy.com/appiumcloud/wd/hub"), capa);
+				// System.out.println("Able to Initiate Driver");
+				// // Driver.setAndroidDriver(driver);
+				// // Reporting purpose
+				// // devicename_report=Devicename;
+				// try {
+				// Thread.sleep(10000);
+				// } catch (InterruptedException e) {
+				// // TODO Auto-generated catch block
+				// e.printStackTrace();
+				// }
+				// }
 
 				else if (prop.getProperty(columns.get(7)).equalsIgnoreCase("browserstack")) {
 					String USERNAME = Propertiesfileutil.getEnvValue("BROWSERSTACK_USERNAME");
