@@ -107,17 +107,6 @@
 			<artifactId>allure-testng-adaptor</artifactId>
 			<version>1.5.4</version>
 		</dependency>
-		<dependency>
-			<groupId>pCloudy-java-connector</groupId>
-			<artifactId>pCloudy-java-connector</artifactId>
-			<version>11.0.5</version>
-		</dependency>
-		<!-- https://mvnrepository.com/artifact/io.github.martinschneider/justtestlah-pcloudy -->
-		<dependency>
-			<groupId>io.github.martinschneider</groupId>
-			<artifactId>justtestlah-pcloudy</artifactId>
-			<version>1.4</version>
-		</dependency>
 	</dependencies>
 
 	<properties>
