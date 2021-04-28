@@ -48,7 +48,7 @@ public class TestListener implements ITestListener {
 	public void onTestFailure(ITestResult result) {
 		System.out.println("*** Test execution " + result.getMethod().getMethodName() + " failed...");
 		try {
-			//WebFunctionLibrary.raiseDefectInBugzilla(result.getMethod().getMethodName());
+			// WebFunctionLibrary.raiseDefectInBugzilla(result.getMethod().getMethodName());
 		} catch (Exception e) {
 			System.out.println("An exception occured while taking screenshot " + e.getCause());
 		} catch (Throwable e) {
