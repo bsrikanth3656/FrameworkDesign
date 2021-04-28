@@ -69,7 +69,7 @@ public class Driverscript {
 					String LOCATOR = excel.getdata(TCmodule, j, 3);
 					String TEST_DATA_1 = excel.getdata(TCmodule, j, 4);
 					String TEST_DATA_2 = excel.getdata(TCmodule, j, 5);
-					String API_PAYLOAD = excel.getdata(TCmodule, j, 9);
+					String API_PAYLOAD = excel.getdata(TCmodule, j, 6);
 
 					ArrayList<String> list = new ArrayList<String>();
 					list.add(excel.getdata(TCmodule, j, 0));
@@ -79,9 +79,6 @@ public class Driverscript {
 					list.add(excel.getdata(TCmodule, j, 4));
 					list.add(excel.getdata(TCmodule, j, 5));
 					list.add(excel.getdata(TCmodule, j, 6));
-					list.add(excel.getdata(TCmodule, j, 7));
-					list.add(excel.getdata(TCmodule, j, 8));
-					list.add(excel.getdata(TCmodule, j, 9));
 
 					try {
 						if (KEYWORD.equalsIgnoreCase("startbrowser")) {
@@ -367,14 +364,14 @@ public class Driverscript {
 							MobileFunctionLibrary.pasteTxt(mobiledriver);
 							logger.log(Status.INFO, DESCRIPTION);
 						}
-						Excelfileutil.setData(TCmodule, j, 10, "passed");
+						Excelfileutil.setData(TCmodule, j, 7, "passed");
 						Modulestatus = "true";
 						logger.log(Status.INFO, DESCRIPTION);
 
 						report.flush();
 
 					} catch (Exception e) {
-						Excelfileutil.setData(TCmodule, j, 10, "failed");
+						Excelfileutil.setData(TCmodule, j, 7, "failed");
 						Modulestatus = "false";
 						logger.log(Status.FAIL, DESCRIPTION + " failed");
 						// take screenshot
@@ -393,7 +390,7 @@ public class Driverscript {
 					}
 
 					catch (AssertionError a) {
-						Excelfileutil.setData(TCmodule, j, 10, "failed");
+						Excelfileutil.setData(TCmodule, j, 7, "failed");
 						Modulestatus = "false";
 						failMsg.append(a.getMessage() + "in " + TCmodule + "sheet , ");
 						// take screenshot
@@ -431,7 +428,7 @@ public class Driverscript {
 
 	public void failstatusonexcel(String TCmodule, String Modulestatus, int j) {
 		try {
-			Excelfileutil.setData(TCmodule, j, 10, "failed");
+			Excelfileutil.setData(TCmodule, j, 7, "failed");
 			Modulestatus = "false";
 			report.flush();
 

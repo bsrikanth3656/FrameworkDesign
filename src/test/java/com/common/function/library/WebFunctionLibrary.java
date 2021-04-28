@@ -73,6 +73,9 @@ public class WebFunctionLibrary {
 //	public static ResignProgressStatusResultDTO progressDto = null;
 //	public static ResignFileDownloadResultDto downloadDto = null;
 //	public static PDriveFileDTO dto = null;
+	private static String EXECUTION = System.getProperty("execution");
+	private static String BROWSER = System.getProperty("browser");
+	private static String MOBILEPLATFORM = System.getProperty("MobilePlatform");
 
 	public static By getLocator(Properties p, String objectName, String locator) {
 		if (locator.equalsIgnoreCase("id")) {
@@ -94,29 +97,31 @@ public class WebFunctionLibrary {
 
 	// method for kickstart of browser // returntype is WebDriver
 	public static WebDriver startbrowser(WebDriver driver, Properties prop, List<String> columns) throws Throwable {
-		if (prop.getProperty(columns.get(6)).contains("firefox"))
+		if (EXECUTION.equalsIgnoreCase("local")) {
+			if (BROWSER.equalsIgnoreCase("Firefox"))
 
-		{
-			System.out.println("Execution starts on Firefox");
-			WebDriverManager.firefoxdriver().setup();
-			driver = new FirefoxDriver();
-		} else if (prop.getProperty(columns.get(6)).equalsIgnoreCase("chrome")) {
-			System.out.println("Execution starts on Chrome");
-			WebDriverManager.chromedriver().setup();
-			// System.setProperty("webdriver.chrome.driver","D:\\Automation\\chromedriver_win32");
-			driver = new ChromeDriver();
-		} else if (prop.getProperty(columns.get(6)).equalsIgnoreCase("ie")) {
-			System.out.println("Execution starts on IE");
-			WebDriverManager.iedriver().setup();
-			// System.setProperty("webdriver.ie.driver","commonjarfiles/IEDriverServer.exe");
-			driver = new InternetExplorerDriver();
-		} else if (prop.getProperty(columns.get(7)).equalsIgnoreCase("browserstack")) {
+			{
+				System.out.println("Execution starts on Firefox");
+				WebDriverManager.firefoxdriver().setup();
+				driver = new FirefoxDriver();
+			} else if (BROWSER.equalsIgnoreCase("Chrome")) {
+				System.out.println("Execution starts on Chrome");
+				WebDriverManager.chromedriver().setup();
+				// System.setProperty("webdriver.chrome.driver","D:\\Automation\\chromedriver_win32");
+				driver = new ChromeDriver();
+			} else if (BROWSER.equalsIgnoreCase("Ie")) {
+				System.out.println("Execution starts on IE");
+				WebDriverManager.iedriver().setup();
+				// System.setProperty("webdriver.ie.driver","commonjarfiles/IEDriverServer.exe");
+				driver = new InternetExplorerDriver();
+			}
+		} else if (EXECUTION.equalsIgnoreCase("browserstack")) {
 			System.out.println("Execution starts on Browserstack Chrome");
 			String USERNAME = Propertiesfileutil.getEnvValue("BROWSERSTACK_USERNAME");
 			String AUTOMATE_KEY = Propertiesfileutil.getEnvValue("BROWSERSTACK_AUTOMATEKEY");
 			String URL = "https://" + USERNAME + ":" + AUTOMATE_KEY + "@hub-cloud.browserstack.com/wd/hub";
 			Hashtable<String, String> capsHashtable = new Hashtable<String, String>();
-			if (prop.getProperty(columns.get(6)).equalsIgnoreCase("browserstackchrome")) {
+			if (BROWSER.equalsIgnoreCase("browserstackchrome")) {
 				capsHashtable.put("browser", "chrome");
 				capsHashtable.put("browser_version", "89.0");
 				capsHashtable.put("os", "Windows");
@@ -124,7 +129,7 @@ public class WebFunctionLibrary {
 				capsHashtable.put("build", "browserstack-build-1");
 				capsHashtable.put("name", "BrowserStack-Chrome-89");
 			}
-			if (prop.getProperty(columns.get(6)).equalsIgnoreCase("browserstackfirefox")) {
+			if (BROWSER.equalsIgnoreCase("browserstackfirefox")) {
 				System.out.println("Execution starts on Browserstack Firefox");
 				capsHashtable.put("browser", "firefox");
 				capsHashtable.put("browser_version", "87.0");
@@ -133,7 +138,7 @@ public class WebFunctionLibrary {
 				capsHashtable.put("build", "browserstack-build-1");
 				capsHashtable.put("name", "BrowserStack-Firefox-87");
 			}
-			if (prop.getProperty(columns.get(6)).equalsIgnoreCase("browserstackie")) {
+			if (BROWSER.equalsIgnoreCase("browserstackie")) {
 				System.out.println("Execution starts on Browserstack IE");
 				capsHashtable.put("browser", "ie");
 				capsHashtable.put("browser_version", "11.0");
@@ -161,14 +166,14 @@ public class WebFunctionLibrary {
 			}
 		}
 
-		else if (prop.getProperty(columns.get(7)).equalsIgnoreCase("saucelabs")) {
+		else if (EXECUTION.equalsIgnoreCase("saucelabs")) {
 			String USERNAME = Propertiesfileutil.getEnvValue("SAUCELABS_USERNAME");
 			String ACCESS_KEY = Propertiesfileutil.getEnvValue("SAUCELAB_SACCESSKEY");
 			// String sauceUserName = System.getenv("SAUCE_USERNAME");
 			// String sauceAccessKey = System.getenv("SAUCE_ACCESS_KEY");
 			String URL = "http://" + USERNAME + ":" + ACCESS_KEY + "@ondemand.saucelabs.com:80/wd/hub";
 			Hashtable<String, String> capsHashtable = new Hashtable<String, String>();
-			if (prop.getProperty(columns.get(6)).equalsIgnoreCase("saucelabschrome")) {
+			if (BROWSER.equalsIgnoreCase("saucelabschrome")) {
 				System.out.println("Execution starts on Browserstack Chrome");
 
 				capsHashtable.put("platform", "Windows 10");
@@ -195,11 +200,11 @@ public class WebFunctionLibrary {
 
 		}
 
-		else if (prop.getProperty(columns.get(7)).equalsIgnoreCase("mobile")) {
+		else if (EXECUTION.equalsIgnoreCase("mobile")) {
 
 			{
-				if (prop.getProperty(columns.get(8)).equalsIgnoreCase("ios"))
-					
+				if (MOBILEPLATFORM.equalsIgnoreCase("ios"))
+
 				{
 					System.out.println("Execution starts on IOS Mobile");
 					caps.setCapability(MobileCapabilityType.DEVICE_NAME, Propertiesfileutil.getEnvValue("deviceName"));
@@ -221,7 +226,7 @@ public class WebFunctionLibrary {
 						e.printStackTrace();
 					}
 
-				} else if (prop.getProperty(columns.get(8)).equalsIgnoreCase("android"))
+				} else if (MOBILEPLATFORM.equalsIgnoreCase("android"))
 
 				{
 					System.out.println("Execution starts on Android Mobile");
@@ -326,7 +331,7 @@ public class WebFunctionLibrary {
 //						e.printStackTrace();
 //					}
 //					// This Api renames the resigned app with the same name as that of
-//					// original .ipa 
+//					// original .ipa 
 //					try {
 //						dto = con.renameFile(authToken, downloadDto.resign_file, downloadDto.file, true);
 //					} catch (IOException e) {
